@@ -2,11 +2,15 @@
 
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import L from 'leaflet';
 import styles from './map.module.css';
+import { MapStyleView } from './MapStyle/mapStyles';
+import { MapStyleType } from './MapStyle/MapStyleType';
+import { mapStyleList } from './MapStyle/MapStyleList';
 
 export function Map() {
+    const [currentStyle, setCurrentStyle] = useState<MapStyleType>(mapStyleList[0]);
 
     useEffect(() => {
         delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -22,11 +26,13 @@ export function Map() {
             <MapContainer
                 center={[16.047079, 108.206230]}
                 zoom={6}
-                className={styles.map} >
+                className={styles.map}
+            >
                 <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution={currentStyle.attribution}
+                    url={currentStyle.url}
                 />
+                <MapStyleView onStyleChange={setCurrentStyle} currentStyle={currentStyle} />
             </MapContainer>
         </div>
     );
