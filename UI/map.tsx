@@ -9,9 +9,17 @@ import { MapStyleView } from './MapStyle/mapStyles';
 import { MapStyleType } from './MapStyle/MapStyleType';
 import { mapStyleList } from './MapStyle/MapStyleList';
 import { SearchBarView } from './SearchBar/SearchBarView';
+import { searchLocation, getZoomLevelByType } from './SearchBar/searchService';
+
+function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+}
 
 export function Map() {
     const [currentStyle, setCurrentStyle] = useState<MapStyleType>(mapStyleList[0]);
+    const [searchResults, setSearchResults] = useState<[number, number] | null>(null);
     const [zoomLevel, setZoomLevel] = useState(6);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -24,9 +32,21 @@ export function Map() {
         });
     }, []);
 
-    const handleSearch = (query: string) => {
-        // TODO: Implement search logic
-        console.log('Searching for:', query);
+    const handleSearch = async (query: string) => {
+        setIsLoading(true);
+        try {
+            const result = await searchLocation(query);
+            if (result) {
+                setSearchResults([result.lat, result.lon]);
+                setZoomLevel(getZoomLevelByType(result.type));
+            } else {
+                alert('Không tìm thấy địa điểm!');
+            }
+        } catch (error) {
+            alert(error instanceof Error ? error.message : 'Có lỗi xảy ra khi tìm kiếm!');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -41,6 +61,11 @@ export function Map() {
                     attribution={currentStyle.attribution}
                     url={currentStyle.url}
                 />
+                {searchResults && (
+                    <>
+                        <ChangeView center={searchResults} zoom={zoomLevel} />
+                    </>
+                )}
                 <MapStyleView onStyleChange={setCurrentStyle} currentStyle={currentStyle} />
             </MapContainer>
         </div>
