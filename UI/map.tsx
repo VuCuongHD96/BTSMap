@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import L from 'leaflet';
@@ -8,9 +8,12 @@ import styles from './map.module.css';
 import { MapStyleView } from './MapStyle/mapStyles';
 import { MapStyleType } from './MapStyle/MapStyleType';
 import { mapStyleList } from './MapStyle/MapStyleList';
+import { SearchBarView } from './SearchBar/SearchBarView';
 
 export function Map() {
     const [currentStyle, setCurrentStyle] = useState<MapStyleType>(mapStyleList[0]);
+    const [zoomLevel, setZoomLevel] = useState(6);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -21,11 +24,17 @@ export function Map() {
         });
     }, []);
 
+    const handleSearch = (query: string) => {
+        // TODO: Implement search logic
+        console.log('Searching for:', query);
+    };
+
     return (
         <div className={styles.mapContainer}>
+            <SearchBarView onSearch={handleSearch} isLoading={isLoading} />
             <MapContainer
                 center={[16.047079, 108.206230]}
-                zoom={6}
+                zoom={zoomLevel}
                 className={styles.map}
             >
                 <TileLayer
