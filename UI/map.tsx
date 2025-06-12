@@ -10,6 +10,7 @@ import { MapStyleType } from './MapStyle/MapStyleType';
 import { mapStyleList } from './MapStyle/MapStyleList';
 import { SearchBarView } from './SearchBar/SearchBarView';
 import { searchLocation, getZoomLevelByType } from './SearchBar/searchService';
+import { fetchGoogleSheetData } from '../src/app/GoogleSheet/Fetch/FetchGoogleSheetData';
 
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
     const map = useMap();
@@ -30,6 +31,18 @@ export function Map() {
             iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
         });
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await fetchGoogleSheetData();
+                console.log('Google Sheet Data:', data);
+            } catch (error) {
+                console.error('Error fetching Google Sheet data:', error);
+            }
+        };
+        fetchData();
     }, []);
 
     const handleSearch = async (query: string) => {
