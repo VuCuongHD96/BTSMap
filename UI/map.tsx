@@ -11,6 +11,7 @@ import { mapStyleList } from './MapStyle/MapStyleList';
 import { SearchBarView } from './SearchBar/SearchBarView';
 import { searchLocation, getZoomLevelByType } from './SearchBar/searchService';
 import { fetchGoogleSheetData } from '../src/app/GoogleSheet/Fetch/FetchGoogleSheetData';
+import { translateGoogleSheetData } from '../src/app/GoogleSheet/Fetch/Translator';
 
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
     const map = useMap();
@@ -37,7 +38,8 @@ export function Map() {
         const fetchData = async () => {
             try {
                 const data = await fetchGoogleSheetData();
-                console.log('Google Sheet Data:', data);
+                const stations = translateGoogleSheetData(data);
+                console.log('Translated Stations:', stations);
             } catch (error) {
                 console.error('Error fetching Google Sheet data:', error);
             }
