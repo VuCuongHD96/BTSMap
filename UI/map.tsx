@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import L from 'leaflet';
@@ -12,6 +12,7 @@ import { SearchBarView } from './SearchBar/SearchBarView';
 import { searchLocation, getZoomLevelByType } from './SearchBar/searchService';
 import { fetchGoogleSheetData } from '../src/app/GoogleSheet/Fetch/FetchGoogleSheetData';
 import { translateGoogleSheetData } from '../src/app/GoogleSheet/Fetch/Translator';
+import { Station } from '../src/app/GoogleSheet/Fetch/Station';
 
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
     const map = useMap();
@@ -24,6 +25,7 @@ export function Map() {
     const [searchResults, setSearchResults] = useState<[number, number] | null>(null);
     const [zoomLevel, setZoomLevel] = useState(6);
     const [isLoading, setIsLoading] = useState(false);
+    const [stations, setStations] = useState<Station[]>([]);
 
     useEffect(() => {
         delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -38,8 +40,8 @@ export function Map() {
         const fetchData = async () => {
             try {
                 const data = await fetchGoogleSheetData();
-                const stations = translateGoogleSheetData(data);
-                console.log('Translated Stations:', stations);
+                const translatedStations = translateGoogleSheetData(data);
+                setStations(translatedStations);
             } catch (error) {
                 console.error('Error fetching Google Sheet data:', error);
             }
@@ -81,6 +83,12 @@ export function Map() {
                         <ChangeView center={searchResults} zoom={zoomLevel} />
                     </>
                 )}
+                {stations.map((station, index) => (
+                    <Marker
+                        key={index}
+                        position={[station.latitude, station.longitude]}
+                    />
+                ))}
                 <MapStyleView onStyleChange={setCurrentStyle} currentStyle={currentStyle} />
             </MapContainer>
         </div>
