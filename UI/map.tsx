@@ -13,6 +13,7 @@ import { searchLocation, getZoomLevelByType } from './SearchBar/searchService';
 import { fetchGoogleSheetData } from '../src/app/GoogleSheet/Fetch/FetchGoogleSheetData';
 import { translateGoogleSheetData } from '../src/app/GoogleSheet/Fetch/Translator';
 import { Station } from '../src/app/GoogleSheet/Fetch/Station';
+import { StationPopup } from './Popup/StationPopup';
 
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
     const map = useMap();
@@ -87,7 +88,9 @@ export function Map() {
                     <Marker
                         key={index}
                         position={[station.latitude, station.longitude]}
-                    />
+                    >
+                        <StationPopup station={station} />
+                    </Marker>
                 ))}
                 <MapStyleView onStyleChange={setCurrentStyle} currentStyle={currentStyle} />
             </MapContainer>
