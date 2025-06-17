@@ -1,5 +1,6 @@
 import { Station } from '../../src/app/GoogleSheet/Fetch/Station';
 import { Popup } from 'react-leaflet';
+import { downloadExcel } from '../../src/app/api/google-sheets/DownloadExcel';
 
 
 interface StationPopupProps {
@@ -24,11 +25,16 @@ function GeneralInformation({ station }: StationPopupProps) {
         <div>
             <div style={{ marginBottom: '10px', fontSize: '20px', backgroundColor: '#0355b2', color: 'white', padding: '5px', textAlign: 'center', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ flexGrow: 1 }}><strong>Thông tin chung</strong></div>
+                <div>
+                    <button onClick={() => downloadExcel({station})} style={{ width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none' }}>
+                        <i className="fas fa-file-excel" style={{ color: 'white', fontSize: '20px' }}></i>
+                    </button>
+                </div>
             </div>
             <div style={{ marginLeft: '10px' }}>
                 <strong>Thời gian tiếp nhận:</strong> {station.receivedTime || 'N/A'}<br />
                 <strong>Nhà cung cấp:</strong> {station.provider || 'N/A'}<br />
-                <strong>Địa chỉ:</strong> {station.address || 'N/A'}<br />
+                <strong>Địa chỉ:</strong> {station.address || 'N/A'}<br />cv
                 <strong>Xã (phường) đặt nhà trạm:</strong> {station.ward || 'N/A'}<br />
                 <strong>Huyện (quận) đặt nhà trạm:</strong> {station.district || 'N/A'}<br />
             </div>
