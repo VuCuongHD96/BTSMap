@@ -1,6 +1,7 @@
 'use client';
 
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
+import type { MapContainer as MapContainerType, TileLayer as TileLayerType } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import L from 'leaflet';
@@ -27,14 +28,22 @@ export function Map() {
     const [zoomLevel, setZoomLevel] = useState(6);
     const [isLoading, setIsLoading] = useState(false);
     const [stations, setStations] = useState<Station[]>([]);
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
-        L.Icon.Default.mergeOptions({
-            iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-        });
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            // @ts-ignore
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+                iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -67,13 +76,18 @@ export function Map() {
         }
     };
 
+    if (!isMounted) {
+        return <div>Loading map...</div>;
+    }
+
     return (
         <div className={styles.mapContainer}>
             <SearchBarView onSearch={handleSearch} isLoading={isLoading} />
             <MapContainer
-                center={[16.047079, 108.206230]}
+                center={[16.047079, 108.206230] as [number, number]}
                 zoom={zoomLevel}
                 className={styles.map}
+                scrollWheelZoom={true}
             >
                 <TileLayer
                     attribution={currentStyle.attribution}
@@ -87,7 +101,7 @@ export function Map() {
                 {stations.map((station, index) => (
                     <Marker
                         key={index}
-                        position={[station.latitude, station.longitude]}
+                        position={[station.latitude, station.longitude] as [number, number]}
                     >
                         <StationPopup station={station} />
                     </Marker>

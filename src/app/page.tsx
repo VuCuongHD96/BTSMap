@@ -1,9 +1,9 @@
-import { Map } from '../../UI/map';
+import MapWrapper from './components/MapWrapper';
 
 export default function Home() {
   return (
     <div>
-      <Map />
+      <MapWrapper />
     </div>
   );
 }
