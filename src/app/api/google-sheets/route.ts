@@ -68,6 +68,8 @@ export async function GET() {
         const googleSheets = google.sheets({ version: "v4", auth });
 
         console.log('Fetching data from Google Sheets');
+        console.log('GOOGLE_SHEET_ID', process.env.GOOGLE_SHEET_ID);
+
         const getRows = await googleSheets.spreadsheets.values.get({
             auth,
             spreadsheetId: process.env.GOOGLE_SHEET_ID || "1Mm_xxrdwJq-dEHoFBSdrRzBV2BU7BKHCWpmZmhbmxIE",
